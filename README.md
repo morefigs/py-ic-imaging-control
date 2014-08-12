@@ -10,7 +10,35 @@ Install to the default directory.
 
 Add this directory to your Windows PATH system variable.
 
-Install ic-imaging-control.
+Install pyicic.
 
-### Testing installation 
-
+### Basic usage
+    
+    from pyicic.IC_ImagingControl import IC_ImagingControl
+    
+    icic = IC_ImagingControl()
+    icic.init_library()
+    
+    cam_names = icic.get_unique_device_names()
+    cam_name = cam_names[0]
+    cam = icic.get_device(cam_name)
+    cam.open()
+    
+    print cam.list_property_names()         # ['gain', 'exposure', 'hue', etc...]
+    cam.gain.auto = True                    # enable auto gain
+    print cam.exposure.range                # e.g. (1, 10)
+    cam.exposure.value = 5                  # disables auto exposure and sets value
+    print cam.exposure.value                # e.g. 5
+    cam.enable_trigger(True)                # camera will wait for trigger
+    cam.set_video_format('RGB24 (640x480)')
+    if not cam.callback_registered:
+        cam.register_frame_ready_callback() # needed to wait for frame ready callback
+    cam.enable_continuous_mode(True)        # image in continuous mode
+    cam.start_live(show_display=True)       # start imaging
+    cam.reset_frame_ready()                 # reset frame ready flag
+    cam.wait_til_frame_ready(3000)          # wait up to 3 seconds for a trigger
+    img_ptr = cam.get_buffer()              # pointer to image data
+    cam.stop_live()
+    
+    icic.close_library()
+    
