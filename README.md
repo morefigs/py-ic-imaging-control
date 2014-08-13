@@ -13,7 +13,9 @@ Add this directory to your Windows PATH system variable.
 Install pyicic.
 
 ### Basic usage
-    
+
+A code example showing image capture with a camera using an external hardware trigger.
+
     from ctypes import *
     from pyicic.IC_ImagingControl import IC_ImagingControl
     
@@ -27,9 +29,11 @@ Install pyicic.
     
     print cam.list_property_names()         # ['gain', 'exposure', 'hue', etc...]
     cam.gain.auto = True                    # enable auto gain
-    print cam.exposure.range                # e.g. (1, 10)
-    cam.exposure.value = 5                  # disables auto exposure and sets value
-    print cam.exposure.value                # e.g. 5
+    print cam.exposure.range                # (0, 10)
+    emin = cam.exposure.min                 # 0
+    emax = cam.exposure.max                 # 10
+    cam.exposure.value = (emin + emax) / 2  # disables auto exposure and sets value to half of range
+    print cam.exposure.value                # 5
     
     cam.enable_trigger(True)                # camera will wait for trigger
     cam.set_video_format('RGB24 (640x480)')
