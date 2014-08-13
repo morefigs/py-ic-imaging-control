@@ -41,8 +41,14 @@ Install pyicic.
     for i in xrange(10):                        # take 10 shots
         cam.reset_frame_ready()                 # reset frame ready flag
         cam.wait_til_frame_ready(3000)          # wait up to 3 seconds for a trigger
-        img_ptr = cam.get_buffer()              # pointer to image data
+        
+        img_ptr = cam.get_buffer()              # do something with a direct pointer to image data...
         img = cast(img_ptr, POINTER(c_ubyte * 640 * 480 * 3))
+        
+        cam.save_image(''.join(['image-',       # or just save image using IC library
+                                str(i),
+                                '.jpg']), 1)
+          
     cam.stop_live()
     
     icic.close_library()
