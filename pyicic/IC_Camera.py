@@ -114,10 +114,41 @@ class IC_Camera(object):
         for vf in vf_list:
             if vf.value:
                 return_list.append(vf.value)
-        return return_list    
+        return return_list
+        
+    def get_video_norm_count(self):
+        """
+        Get the number of the available video norm formats for the current device. 
+        A video capture device must have been opened before this call.
+        
+        :returns: int -- number of available video norms.
+        """
+        vn_count = IC_GrabberDLL.get_video_norm_count(self._handle)
+        if vn_count < 0:
+            raise IC_Exception(vn_count)
+        return vn_count
+    
+    def get_video_norm(self, norm_index):
+        """
+        Get a string representation of the video norm specified by norm_index. 
+        norm_index must be between 0 and get_video_norm_count().
+        
+        :returns: string -- name of video norm of specified index.
+        """
+        # DLL says need to call this first for it to work
+        num_vns = self.get_video_norm_count()
+        if norm_index >= num_vns:
+            raise IC_Exception(-102)
+        vn = IC_GrabberDLL.get_video_norm(self._handle, c_int(norm_index))
+        if vn is None:
+            raise IC_Exception(-104)
+        return vn
     
     def get_video_format_count(self):
         """
+        Get the number of the available video formats for the current device. 
+        A video capture device must have been opened before this call.
+
         :returns: int -- number of available video formats.
         """
         vf_count = IC_GrabberDLL.get_video_format_count(self._handle)
@@ -127,16 +158,27 @@ class IC_Camera(object):
     
     def get_video_format(self, format_index):
         """
-        Get video format of the device.
+        Get a string representation of the video format specified by format_index. 
+        format_index must be between 0 and get_video_format_count().
         """
         # DLL says need to call this first for it to work
         num_vfs = self.get_video_format_count()
         if format_index >= num_vfs:
-            raise IC_Exception(todo)
+            raise IC_Exception(-103)
         vf = IC_GrabberDLL.get_video_format(self._handle, c_int(format_index))
         if vf is None:
-            raise IC_Exception(err)
+            raise IC_Exception(-105)
         return vf
+        
+    def get_video_format_width(self):
+        """
+        """
+        return IC_GrabberDLL.get_video_format_width(self._handle)
+        
+    def get_video_format_height(self):
+        """
+        """
+        return IC_GrabberDLL.get_video_format_height(self._handle)
     
     def set_video_format(self, video_format):
         """
@@ -147,17 +189,17 @@ class IC_Camera(object):
         err = IC_GrabberDLL.set_video_format(self._handle, c_char_p(video_format))
         if err != 1:
             raise IC_Exception(err)
-    
-    def get_video_format_width(self):
+            
+    def set_video_norm(self, video_norm):
         """
-        """
-        return IC_GrabberDLL.get_video_format_width(self._handle)
+        Sets video norm format, whatver that means.
         
-    def get_video_format_height(self):
+        :param video_norm: string -- video norm to use.
         """
-        """
-        return IC_GrabberDLL.get_video_format_height(self._handle)
-        
+        err = IC_GrabberDLL.set_video_norm(self._handle, c_char_p(video_norm))
+        if err != 1:
+            raise IC_Exception(err)
+
     def get_format(self):
         """
         """
