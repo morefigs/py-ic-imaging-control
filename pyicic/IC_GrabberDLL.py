@@ -233,8 +233,12 @@ class IC_GrabberDLL(object):
     #    @retval IC_ERROR if something went wrong.
     #*/
     #int AC IC_SetVideoNorm( HGRABBER hGrabber, char *szNorm ); ///<Set the video norm.
-    #
-    #
+    set_video_norm = _ic_grabber_dll.IC_SetVideoNorm
+    set_video_norm.restype = c_int
+    set_video_norm.restype = c_int
+    set_video_norm.argtypes = (GrabberHandle,
+                               c_char_p)
+    
     #//////////////////////////////////////////////////////////////////////////
     #/*! Set a input channel for the current video capture device. 
     #    @note  The current video capture device must support input channels.. 
