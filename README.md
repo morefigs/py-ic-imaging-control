@@ -6,10 +6,12 @@ py-ic-imaging-control is a Python wrapper for the IC Imaging Control SDK from Th
 
 Download the IC Imaging Control C SDK from here: http://www.theimagingsource.com/en_US/support/downloads/details/icimagingcontrolcwrapper/
 
-Install to the default directory, i.e.
+Install to the default directory, ie:
+
 `C:\Users\<USERNAME>\Documents\The Imaging Source Europe GmbH\TIS Grabber DLL`
 
-Add the `\bin\win32` directory to your Windows PATH system variable, i.e.
+Add the `\bin\win32` directory to your Windows PATH system variable, ie:
+
 `C:\Users\<USERNAME>\Documents\The Imaging Source Europe GmbH\TIS Grabber DLL\bin\win32`
 
 Install pyicic.
