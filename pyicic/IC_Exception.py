@@ -31,7 +31,11 @@ class IC_Exception(Exception):
                        
                         # other errors
                      -100   :   'UNKNOWN ERROR',
-                     -101   :   'UNKNOWN DEVICE FEATURE'
+                     -101   :   'UNKNOWN DEVICE FEATURE',
+                     -102   :   'VIDEO NORM INDEX OUT OF RANGE',
+                     -103   :   'VIDEO FORMAT INDEX OUT OF RANGE',
+                     -104   :   'VIDEO NORM RETURNED NULL TYPE',
+                     -105   :   'VIDEO FORMAT RETURNED NULL TYPE'
                    }
     
     def __init__(self, error_code):
