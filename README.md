@@ -1,6 +1,6 @@
 # py-ic-imaging-control
 
-py-ic-imaging-control offers full control of The Imaging Source (TIS) cameras using only Python. It is a Python wrapper for the IC Imaging Control SDK and wraps the tisgrabber.dll file included in the IC Imaging Control C SDK installer. It supports most of the functionality exposed by the DLL file, including frame ready callbacks.
+py-ic-imaging-control provides control of The Imaging Source (TIS) cameras using only Python. It is a Python wrapper for the IC Imaging Control SDK and wraps the tisgrabber.dll file included in the IC Imaging Control C SDK installer using ctypes. The code currently supports most of the functionality exposed by the DLL file, including frame ready callbacks.
 
 This module only works on Windows due to wrapping a DLL. Tested on Windows 7 with GigE and USB The Imaging Source cameras.
 
