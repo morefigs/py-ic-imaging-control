@@ -205,10 +205,10 @@ class IC_Camera(object):
         """
         return IC_GrabberDLL.get_format(self._handle)
     
-    def set_format(self, format):
+    def set_format(self, color_format):
         """
         """
-        err = IC_GrabberDLL.set_format(self._handle, c_int(value))
+        err = IC_GrabberDLL.set_format(self._handle, c_int(color_format))
         if err != 1:
             raise IC_Exception(err)
             
