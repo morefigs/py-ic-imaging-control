@@ -6,8 +6,10 @@ import time
 
 from IC_GrabberDLL import IC_GrabberDLL
 from IC_Exception import IC_Exception
-from IC_Structures import GrabberHandle
 from IC_Property import IC_Property
+import IC_Structures as structs
+
+GrabberHandlePtr = POINTER(structs.GrabberHandle)
 
 # "typedefs"
 IMG_FILETYPE = ['FILETYPE_BMP',
@@ -21,7 +23,7 @@ COLOR_FORMAT = ['Y800',
 
 # c function type for frame callback
 # outside of class so it can be called by unbound function
-C_FRAME_READY_CALLBACK = CFUNCTYPE(None, GrabberHandle, POINTER(c_ubyte), c_ulong, c_void_p)
+C_FRAME_READY_CALLBACK = CFUNCTYPE(None, GrabberHandlePtr, POINTER(c_ubyte), c_ulong, c_void_p)
 
 class IC_Camera(object):
     
@@ -40,14 +42,15 @@ class IC_Camera(object):
         self._callback_registered = False
         self._frame = {'num'    :   -1,
                        'ready'  :   False}
-        
+
     def __getattr__(self, attr):
     
         if attr in IC_Property.get_all_property_names():
             return IC_Property(self._handle, attr)
         else:
-            raise IC_Exception(-101)
-        
+            raise AttributeError
+    
+    # not needed if we use props directly
     #def __setattr__(self, attr, val):
     #    
     #    if attr.startswith('_'):
@@ -69,6 +72,25 @@ class IC_Camera(object):
                                                        self._unique_device_name)
         if err != 1:
             raise IC_Exception(err)
+    
+    def close(self):
+        """
+        Close the camera device.
+        """
+        IC_GrabberDLL.close_device(self._handle)
+ 
+ 
+        ## don't use, returns wrong number..?
+        #def get_serial_number(self):
+        #    
+        #    #serial = create_string_buffer(20)
+        #    serial = (c_char * 20)()
+        #    
+        #    IC_GrabberDLL.get_serial_number(self._handle,
+        #                                    serial)
+        #
+        #    return serial.value
+    
     
     def is_open(self):
         """
@@ -102,12 +124,23 @@ class IC_Camera(object):
     #def get_property_type(self, property_name):
     #    return IC_Property(self._handle, property_name).type
     
+    def reset_properties(self):
+        """
+        Resets all properties to their default values. If a property has
+        automation, the automatic will be enabled.
+        If the device supports external trigger, the external trigger will
+        be disabled.
+        """
+        return IC_GrabberDLL.reset_properties(self._handle)
+        
     def list_video_formats(self):
         """
         :returns: list -- available video formats.
         """
         vf_list = ((c_char * 80) * 40)()
-        num_vfs = IC_GrabberDLL.list_video_formats(self._handle, byref(vf_list), c_int(80))
+        num_vfs = IC_GrabberDLL.list_video_formats(self._handle,
+                                                   byref(vf_list),
+                                                   c_int(80))
         if num_vfs < 0:
             raise IC_Exception(num_vfs)
         return_list = []
@@ -115,7 +148,7 @@ class IC_Camera(object):
             if vf.value:
                 return_list.append(vf.value)
         return return_list
-        
+    
     def get_video_norm_count(self):
         """
         Get the number of the available video norm formats for the current device. 
@@ -148,7 +181,7 @@ class IC_Camera(object):
         """
         Get the number of the available video formats for the current device. 
         A video capture device must have been opened before this call.
-
+        
         :returns: int -- number of available video formats.
         """
         vf_count = IC_GrabberDLL.get_video_format_count(self._handle)
@@ -169,16 +202,6 @@ class IC_Camera(object):
         if vf is None:
             raise IC_Exception(-105)
         return vf
-        
-    def get_video_format_width(self):
-        """
-        """
-        return IC_GrabberDLL.get_video_format_width(self._handle)
-        
-    def get_video_format_height(self):
-        """
-        """
-        return IC_GrabberDLL.get_video_format_height(self._handle)
     
     def set_video_format(self, video_format):
         """
@@ -189,7 +212,7 @@ class IC_Camera(object):
         err = IC_GrabberDLL.set_video_format(self._handle, c_char_p(video_format))
         if err != 1:
             raise IC_Exception(err)
-            
+
     def set_video_norm(self, video_norm):
         """
         Sets video norm format, whatver that means.
@@ -199,7 +222,17 @@ class IC_Camera(object):
         err = IC_GrabberDLL.set_video_norm(self._handle, c_char_p(video_norm))
         if err != 1:
             raise IC_Exception(err)
-
+    
+    def get_video_format_width(self):
+        """
+        """
+        return IC_GrabberDLL.get_video_format_width(self._handle)
+        
+    def get_video_format_height(self):
+        """
+        """
+        return IC_GrabberDLL.get_video_format_height(self._handle)
+        
     def get_format(self):
         """
         """
@@ -225,7 +258,7 @@ class IC_Camera(object):
     def set_frame_rate(self, frame_rate):
         """
         """
-        err = IC_GrabberDLL.set_frame_rate(self._handle, c_float(value))
+        err = IC_GrabberDLL.set_frame_rate(self._handle, c_float(frame_rate))
         if err != 1:
             raise IC_Exception(err)
     
@@ -292,7 +325,25 @@ class IC_Camera(object):
         IC_GrabberDLL.stop_live(self._handle)
         
     def get_image_description(self):
-        pass # todo
+        """
+        Get image info.
+        
+        :returns: tuple -- (image width, image height, image depth, color format).
+        """
+        
+        img_width = c_long()
+        img_height = c_long()
+        img_depth = c_int()
+        color_format = c_int()
+        
+        err = IC_GrabberDLL.get_image_description(self._handle,
+                                                  byref(img_width),
+                                                  byref(img_height),
+                                                  byref(img_depth),
+                                                  byref(color_format),
+                                                  )
+        
+        return (img_width.value, img_height.value, img_depth.value, color_format.value)
     
     def snap_image(self, timeout=1000):
         """
@@ -304,11 +355,11 @@ class IC_Camera(object):
         if err != 1:
             raise IC_Exception(err)
     
-    def get_buffer(self):
+    def get_image_ptr(self):
         """
         Get image buffer from camera.
         
-        :returns: ctypes pointer -- pointer to image data. todo, return data.
+        :returns: ctypes pointer -- pointer to image data.
         """
         img_ptr = IC_GrabberDLL.get_image_ptr(self._handle)
         if img_ptr is None:
@@ -319,6 +370,31 @@ class IC_Camera(object):
         #array = img_data.contents
 
         return img_ptr
+    
+    def get_image_data(self):
+        """
+        Get image data.
+        
+        :returns: ctypes.c_ubyte array -- the image data.
+        """
+        image_size = self.get_image_description()[:3]
+        
+        img_width = image_size[0]
+        img_height = image_size[1]
+        img_depth = image_size[2] / 8
+        buffer_size = img_width * img_height * img_depth * sizeof(c_uint8)
+
+        img_ptr = self.get_image_ptr()
+        data = cast(img_ptr, POINTER(c_ubyte * buffer_size))
+        
+        return (data.contents, img_width, img_height, img_depth)
+        
+        #img = np.ndarray(buffer = data.contents,
+        #                 dtype = np.uint8,
+        #                 shape = (img_height,
+        #                          img_width,
+        #                          img_depth))
+        #return img
 
     def save_image(self, filename, filetype=1, jpeq_quality=75):
         """
@@ -338,9 +414,10 @@ class IC_Camera(object):
     # generate callback function so it is not a bound method
     # (cb_func cannot have the self parameter)
     def _get_callback_func(self):
-        def cb_func(handle, p_data, frame_num, data):
+        def cb_func(handle_ptr, p_data, frame_num, data):
             self._frame['ready'] = True
             self._frame['num'] = frame_num
+
         return C_FRAME_READY_CALLBACK(cb_func)
     
     def register_frame_ready_callback(self):
@@ -353,7 +430,6 @@ class IC_Camera(object):
         # register callback function with DLL
         # instead of passing pointer to a variable (3rd param) we will set the flag ourselves
         IC_GrabberDLL.set_frame_ready_callback(self._handle, self._rfrc_func, None)
-        
         self._callback_registered = True
         
     def reset_frame_ready(self):
@@ -384,6 +460,8 @@ class IC_Camera(object):
                 time.sleep(0.001)
 
         return self._frame['num']
+    
+    
     
     
     
