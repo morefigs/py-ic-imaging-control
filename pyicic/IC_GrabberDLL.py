@@ -4,13 +4,15 @@
 from ctypes import *
 import os
 
-from IC_Structures import GrabberHandle
+import IC_Structures as structs
 
 class IC_GrabberDLL(object):
     """
     ctypes funcs to talk to tisgrabber.dll.
     """
-
+    
+    GrabberHandlePtr = POINTER(structs.GrabberHandle)
+    
     # check path
     dll_path = os.path.join(os.path.expanduser('~'),
                             'Documents\\The Imaging Source Europe GmbH\\TIS Grabber DLL\\bin\\win32\\tisgrabber.dll')
@@ -19,7 +21,7 @@ class IC_GrabberDLL(object):
     
     # win32
     _ic_grabber_dll = windll.LoadLibrary(dll_path)
-    
+
     #//////////////////////////////////////////////////////////////////////////
     #/*! Initialize the ICImagingControl class library. This function must be called
     #    only once before any other functions of this library are called.
@@ -43,7 +45,8 @@ class IC_GrabberDLL(object):
     #*/
     #HGRABBER AC IC_CreateGrabber();///<Create a new grabber handle
     create_grabber = _ic_grabber_dll.IC_CreateGrabber
-    create_grabber.restype = GrabberHandle
+    ###create_grabber.restype = GrabberHandle
+    create_grabber.restype = GrabberHandlePtr
     create_grabber.argtypes = None
     
     #//////////////////////////////////////////////////////////////////////////
@@ -55,7 +58,7 @@ class IC_GrabberDLL(object):
     #void AC IC_ReleaseGrabber( HGRABBER *hGrabber ); ///< Releas an HGRABBER object.
     release_grabber = _ic_grabber_dll.IC_ReleaseGrabber
     release_grabber.restype = None
-    release_grabber.argtypes = (GrabberHandle,)
+    release_grabber.argtypes = (POINTER(GrabberHandlePtr),)
     
     #//////////////////////////////////////////////////////////////////////////
     #/*    Must be called at the end of the application to release allocated memory.
@@ -103,7 +106,7 @@ class IC_GrabberDLL(object):
     #int AC IC_OpenVideoCaptureDevice( HGRABBER hGrabber, char *szDeviceName ); ///< Opens a video capture device.
     open_device = _ic_grabber_dll.IC_OpenVideoCaptureDevice
     open_device.restype = c_int                                
-    open_device.argtypes = (GrabberHandle,            
+    open_device.argtypes = (GrabberHandlePtr,            
                             c_char_p)                        
     
     #//////////////////////////////////////////////////////////////////////////
@@ -114,7 +117,7 @@ class IC_GrabberDLL(object):
     #void AC IC_CloseVideoCaptureDevice( HGRABBER hGrabber ); ///<Closes a video capture device.
     close_device = _ic_grabber_dll.IC_CloseVideoCaptureDevice
     close_device.restype = None
-    close_device.argtypes = (GrabberHandle,)
+    close_device.argtypes = (GrabberHandlePtr,)
     
     #//////////////////////////////////////////////////////////////////////////
     #/*! Retrieve the name of the current video capture device. If the device is
@@ -126,17 +129,17 @@ class IC_GrabberDLL(object):
     #char* AC IC_GetDeviceName(HGRABBER hGrabber ); ///<Returns the name of the current video capture device.
     get_device_name = _ic_grabber_dll.IC_GetDeviceName
     get_device_name.restype = c_char_p
-    get_device_name.argtypes = (GrabberHandle,)
+    get_device_name.argtypes = (GrabberHandlePtr,)
     
     #int AC IC_GetVideoFormatWidth( HGRABBER hGrabber); ///<Returns the width of the video format.
     get_video_format_width = _ic_grabber_dll.IC_GetVideoFormatWidth
     get_video_format_width.restype = c_int
-    get_video_format_width.argtypes = (GrabberHandle,)
+    get_video_format_width.argtypes = (GrabberHandlePtr,)
     
     #int AC IC_GetVideoFormatHeight( HGRABBER hGrabber);///<returns the height of the video format.
     get_video_format_height = _ic_grabber_dll.IC_GetVideoFormatHeight
     get_video_format_height.restype = c_int
-    get_video_format_height.argtypes = (GrabberHandle,)
+    get_video_format_height.argtypes = (GrabberHandlePtr,)
     
     #//////////////////////////////////////////////////////////////////////////
     #/*! Set the sink type. A sink type must be set before images can be snapped.
@@ -167,7 +170,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SetFormat( HGRABBER hGrabber, COLORFORMAT format ); ///< Sets the color format of the sink. 
     set_format = _ic_grabber_dll.IC_SetFormat
     set_format.restype = c_int
-    set_format.argtypes = (GrabberHandle,
+    set_format.argtypes = (GrabberHandlePtr,
                            #structs.ColorFormat)
                            c_int) # todo enum
     
@@ -182,7 +185,7 @@ class IC_GrabberDLL(object):
     get_format = _ic_grabber_dll.IC_GetFormat
     #get_format.restype = structs.ColorFormat
     get_format.restype = c_int # todo enum
-    get_format.argtypes = (GrabberHandle,)
+    get_format.argtypes = (GrabberHandlePtr,)
     
     #//////////////////////////////////////////////////////////////////////////
     #/*! Set a video format for the current video capture device. The video format
@@ -221,7 +224,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SetVideoFormat( HGRABBER hGrabber, char *szFormat ); ///<Sets the video format.
     set_video_format = _ic_grabber_dll.IC_SetVideoFormat
     set_video_format.restype = c_int
-    set_video_format.argtypes = (GrabberHandle,
+    set_video_format.argtypes = (GrabberHandlePtr,
                                  c_char_p)
     
     #//////////////////////////////////////////////////////////////////////////
@@ -236,7 +239,7 @@ class IC_GrabberDLL(object):
     set_video_norm = _ic_grabber_dll.IC_SetVideoNorm
     set_video_norm.restype = c_int
     set_video_norm.restype = c_int
-    set_video_norm.argtypes = (GrabberHandle,
+    set_video_norm.argtypes = (GrabberHandlePtr,
                                c_char_p)
     
     #//////////////////////////////////////////////////////////////////////////
@@ -261,19 +264,19 @@ class IC_GrabberDLL(object):
     #int AC IC_StartLive( HGRABBER hGrabber, int iShow ); ///<Starts the live video.
     start_live = _ic_grabber_dll.IC_StartLive
     start_live.restype = c_int
-    start_live.argtypes = (GrabberHandle,
+    start_live.argtypes = (GrabberHandlePtr,
                            c_int)
     
     #int AC IC_PrepareLive( HGRABBER hGrabber, int iShow); ///<Prepare the grabber for starting the live video.
     prepare_live = _ic_grabber_dll.IC_PrepareLive
     prepare_live.restype = c_int
-    prepare_live.argtypes = (GrabberHandle,
+    prepare_live.argtypes = (GrabberHandlePtr,
                              c_int)
         
     #int AC IC_SuspendLive(HGRABBER hGrabber); ///<Suspends an image stream and puts it into prepared state. 
     suspend_live = _ic_grabber_dll.IC_SuspendLive
     suspend_live.restype = c_int
-    suspend_live.argtypes = (GrabberHandle,)
+    suspend_live.argtypes = (GrabberHandlePtr,)
     
     #//////////////////////////////////////////////////////////////////////////
     #/*! Stop the live video.
@@ -283,12 +286,12 @@ class IC_GrabberDLL(object):
     #void AC IC_StopLive( HGRABBER hGrabber ); ///<Stops the live video.
     stop_live = _ic_grabber_dll.IC_StopLive
     stop_live.restype = None
-    stop_live.argtypes = (GrabberHandle,)
+    stop_live.argtypes = (GrabberHandlePtr,)
     
     #int AC IC_IsCameraPropertyAvailable( HGRABBER hGrabber, CAMERA_PROPERTY eProperty ); ///< Check whether a camera property is available.
     is_camera_property_available = _ic_grabber_dll.IC_IsCameraPropertyAvailable
     is_camera_property_available.restype = c_int
-    is_camera_property_available.argtypes = (GrabberHandle,
+    is_camera_property_available.argtypes = (GrabberHandlePtr,
                                              c_int)    
     
     #//////////////////////////////////////////////////////////////////////////
@@ -314,14 +317,14 @@ class IC_GrabberDLL(object):
     #int AC IC_SetCameraProperty( HGRABBER hGrabber, CAMERA_PROPERTY eProperty, long lValue ); ///< Set a camera property.
     set_camera_property = _ic_grabber_dll.IC_SetCameraProperty
     set_camera_property.restype = c_int
-    set_camera_property.argtypes = (GrabberHandle,
+    set_camera_property.argtypes = (GrabberHandlePtr,
                                     c_int,
                                     c_long)
     
     #int AC IC_CameraPropertyGetRange( HGRABBER hGrabber, CAMERA_PROPERTY eProperty, long *lMin, long *lMax); ///<Get the minimum and maximum value of a camera property
     camera_property_get_range = _ic_grabber_dll.IC_CameraPropertyGetRange
     camera_property_get_range.restype = c_int
-    camera_property_get_range.argtypes = (GrabberHandle,
+    camera_property_get_range.argtypes = (GrabberHandlePtr,
                                           c_int,
                                           POINTER(c_long),
                                           POINTER(c_long))
@@ -329,7 +332,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetCameraProperty( HGRABBER hGrabber, CAMERA_PROPERTY eProperty, long *lValue);  ///< Get a camera property's value.
     get_camera_property = _ic_grabber_dll.IC_GetCameraProperty
     get_camera_property.restype = c_int
-    get_camera_property.argtypes = (GrabberHandle,
+    get_camera_property.argtypes = (GrabberHandlePtr,
                                     c_int,
                                     POINTER(c_long))
     
@@ -357,20 +360,20 @@ class IC_GrabberDLL(object):
     #int AC IC_EnableAutoCameraProperty( HGRABBER hGrabber, int iProperty, int iOnOff ); ///<Enables or disables property automation.
     enable_auto_camera_property = _ic_grabber_dll.IC_EnableAutoCameraProperty
     enable_auto_camera_property.restype = c_int
-    enable_auto_camera_property.argtypes = (GrabberHandle,
+    enable_auto_camera_property.argtypes = (GrabberHandlePtr,
                                            c_int,
                                            c_int)
     
     #int AC IC_IsCameraPropertyAutoAvailable( HGRABBER hGrabber, CAMERA_PROPERTY iProperty ); ///<Check whether automation for a camera property is available.
     is_camera_property_auto_available = _ic_grabber_dll.IC_IsCameraPropertyAutoAvailable
     is_camera_property_auto_available.restype = c_int
-    is_camera_property_auto_available.argtypes = {GrabberHandle,
+    is_camera_property_auto_available.argtypes = {GrabberHandlePtr,
                                                   c_int}
     
     #int AC IC_GetAutoCameraProperty( HGRABBER hGrabber, int iProperty, int *iOnOff ); ///<Retrieve whether automatic is enabled for the specifield camera property.
     get_auto_camera_property = _ic_grabber_dll.IC_GetAutoCameraProperty
     get_auto_camera_property.restype = c_int
-    get_auto_camera_property.argtypes = (GrabberHandle,
+    get_auto_camera_property.argtypes = (GrabberHandlePtr,
                                          c_int,
                                          POINTER(c_int))
     
@@ -378,13 +381,13 @@ class IC_GrabberDLL(object):
     #int AC IC_IsVideoPropertyAvailable( HGRABBER hGrabber, VIDEO_PROPERTY eProperty ); ///<Check whether the specified video property is available.
     is_video_property_available = _ic_grabber_dll.IC_IsVideoPropertyAvailable
     is_video_property_available.restype = c_int
-    is_video_property_available.argtypes = (GrabberHandle,
+    is_video_property_available.argtypes = (GrabberHandlePtr,
                                             c_int)      # todo
     
     #int AC IC_VideoPropertyGetRange( HGRABBER hGrabber, VIDEO_PROPERTY eProperty, long *lMin, long *lMax); ///<Retrieve the lower and upper limit of a video property.
     video_property_get_range = _ic_grabber_dll.IC_VideoPropertyGetRange
     video_property_get_range.restype = c_int
-    video_property_get_range.argtypes = (GrabberHandle,
+    video_property_get_range.argtypes = (GrabberHandlePtr,
                                          c_int,    # todo
                                          POINTER(c_long),
                                          POINTER(c_long))
@@ -392,20 +395,20 @@ class IC_GrabberDLL(object):
     #int AC IC_GetVideoProperty( HGRABBER hGrabber, VIDEO_PROPERTY eProperty, long *lValue ); ///< Retrieve the the current value of the specified video property.
     get_video_property = _ic_grabber_dll.IC_GetVideoProperty
     get_video_property.restype = c_int
-    get_video_property.argtypes = (GrabberHandle,
+    get_video_property.argtypes = (GrabberHandlePtr,
                                    c_int,   # todo
                                    POINTER(c_long))
     
     #int AC IC_IsVideoPropertyAutoAvailable( HGRABBER hGrabber, VIDEO_PROPERTY eProperty ); ///<Check whether the specified video property supports automation.
     is_video_property_auto_available = _ic_grabber_dll.IC_IsVideoPropertyAutoAvailable
     is_video_property_auto_available.restype = c_int
-    is_video_property_auto_available.argtypes = (GrabberHandle,
+    is_video_property_auto_available.argtypes = (GrabberHandlePtr,
                                                  c_int)     # todo    
     
     #int AC IC_GetAutoVideoProperty( HGRABBER hGrabber, int iProperty, int *iOnOff ); ///<Get the automation state of a video property.
     get_auto_video_property = _ic_grabber_dll.IC_GetAutoVideoProperty
     get_auto_video_property.restype = c_int
-    get_auto_video_property.argtypes = (GrabberHandle,
+    get_auto_video_property.argtypes = (GrabberHandlePtr,
                                         c_int,   # todo enum
                                         POINTER(c_int))
     
@@ -435,7 +438,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SetVideoProperty( HGRABBER hGrabber, VIDEO_PROPERTY eProperty, long lValue ); ///<Set a video property.
     set_video_property = _ic_grabber_dll.IC_SetVideoProperty
     set_video_property.restype = c_int
-    set_video_property.argtypes = (GrabberHandle,
+    set_video_property.argtypes = (GrabberHandlePtr,
                                    c_int,
                                    c_long)   # todo enum
     
@@ -466,7 +469,7 @@ class IC_GrabberDLL(object):
     #int AC IC_EnableAutoVideoProperty( HGRABBER hGrabber, int iProperty, int iOnOff ); ///< Switch automatition for a video property,
     enable_auto_video_property = _ic_grabber_dll.IC_EnableAutoVideoProperty
     enable_auto_video_property.restype = c_int
-    enable_auto_video_property.argtypes = (GrabberHandle,
+    enable_auto_video_property.argtypes = (GrabberHandlePtr,
                                            c_int,   # todo enum
                                            c_int)
     
@@ -484,7 +487,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetImageDescription( HGRABBER hGrabber, long *lWidth, long *lHeight, int *iBitsPerPixel, COLORFORMAT *format );///<Retrieve the properties of the current video format and sink typ.
     get_image_description = _ic_grabber_dll.IC_GetImageDescription
     get_image_description.restype = c_int
-    get_image_description.argtypes = (GrabberHandle,
+    get_image_description.argtypes = (GrabberHandlePtr,
                                       POINTER(c_long),
                                       POINTER(c_long),
                                       POINTER(c_int),
@@ -511,7 +514,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SnapImage( HGRABBER hGrabber, int iTimeOutMillisek); ///<Snaps an image from the live stream. 
     snap_image = _ic_grabber_dll.IC_SnapImage
     snap_image.restype = c_int
-    snap_image.argtypes = (GrabberHandle,
+    snap_image.argtypes = (GrabberHandlePtr,
                            c_int)
     
     #//////////////////////////////////////////////////////////////////////////
@@ -537,7 +540,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SaveImage( HGRABBER hGrabber, char *szFileName, IMG_FILETYPE ft, long quality ); ///< Saves an image to a file.
     save_image = _ic_grabber_dll.IC_SaveImage
     save_image.restype = c_int
-    save_image.argtypes = (GrabberHandle,
+    save_image.argtypes = (GrabberHandlePtr,
                            c_char_p,
                            c_int,    # 1 = jpeg
                            c_long)    # eg. 75 (75%)
@@ -556,7 +559,7 @@ class IC_GrabberDLL(object):
     #unsigned char* AC IC_GetImagePtr( HGRABBER hGrabber ); ///< Retuns a pointer to the image data
     get_image_ptr = _ic_grabber_dll.IC_GetImagePtr
     get_image_ptr.restype = POINTER(c_void_p)
-    get_image_ptr.argtypes = (GrabberHandle,)    
+    get_image_ptr.argtypes = (GrabberHandlePtr,)    
     
     #//////////////////////////////////////////////////////////////////////////
     #/*! Assign an Window handle to display the video in.
@@ -584,9 +587,9 @@ class IC_GrabberDLL(object):
     #void AC IC_GetSerialNumber( HGRABBER hGrabber, char* szSerial );///<Return the video capture device's serial number.
     #get_serial_number = _ic_grabber_dll.IC_GetSerialNumber
     #get_serial_number.restype = None
-    #get_serial_number.argtypes = (GrabberHandle,
+    #get_serial_number.argtypes = (GrabberHandlePtr,
     #                              c_char_p)
-    # ^ doesn't seem to work...
+    # ^ doesn't seem to work... returns consistent but wrong number...
     
     #//////////////////////////////////////////////////////////////////////////
     #/*! Count all connected video capture devices. If the Parameter szDeviceList
@@ -647,7 +650,7 @@ class IC_GrabberDLL(object):
     #int AC IC_ListVideoFormats( HGRABBER hGrabber, char *szFormatList, int iSize );///<List available video formats.
     list_video_formats = _ic_grabber_dll.IC_ListVideoFormats
     list_video_formats.restype = c_int
-    list_video_formats.argtypes = (GrabberHandle,
+    list_video_formats.argtypes = (GrabberHandlePtr,
                                    POINTER((c_char * 80) * 40),
                                    c_int)
     
@@ -722,7 +725,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetInputChannelCount( HGRABBER hGrabber ); ///<Get the number of the available input channels.
     get_input_channel_count = _ic_grabber_dll.IC_GetInputChannelCount
     get_input_channel_count.restype = c_int
-    get_input_channel_count.argtypes = (GrabberHandle,)
+    get_input_channel_count.argtypes = (GrabberHandlePtr,)
     
     #//////////////////////////////////////////////////////////////////////////
     #/*! Get a string representation of the input channel specified by iIndex. 
@@ -739,11 +742,11 @@ class IC_GrabberDLL(object):
     #char* AC IC_GetInputChannel( HGRABBER hGrabber, int iIndex ); ///<Get the name of an input channel.
     get_input_channel = _ic_grabber_dll.IC_GetInputChannel
     get_input_channel.restype = c_char_p
-    get_input_channel.argtypes = (GrabberHandle,
+    get_input_channel.argtypes = (GrabberHandlePtr,
                                   c_int)
     
     #//////////////////////////////////////////////////////////////////////////
-    #/*! Get the number of the available video norms for the current device. 
+    #/*! Get the number of the available video formats for the current device. 
     #    A video capture device must have been opened before this call.
     #    
     #    @param hGrabber The handle to the grabber object.
@@ -756,7 +759,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetVideoNormCount( HGRABBER hGrabber ); ///<Get the count of available video norms.
     get_video_norm_count = _ic_grabber_dll.IC_GetVideoNormCount
     get_video_norm_count.restype = c_int
-    get_video_norm_count.argtypes = (GrabberHandle,)
+    get_video_norm_count.argtypes = (GrabberHandlePtr,)
     
     #//////////////////////////////////////////////////////////////////////////
     #/*! Get a string representation of the video norm specified by iIndex. 
@@ -775,7 +778,7 @@ class IC_GrabberDLL(object):
     #char* AC IC_GetVideoNorm( HGRABBER hGrabber, int iIndex ); ///<Get the name of a video norm.
     get_video_norm = _ic_grabber_dll.IC_GetVideoNorm
     get_video_norm.restype = c_char_p
-    get_video_norm.argtypes = (GrabberHandle,
+    get_video_norm.argtypes = (GrabberHandlePtr,
                                c_int)
     
     #//////////////////////////////////////////////////////////////////////////
@@ -792,7 +795,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetVideoFormatCount( HGRABBER hGrabber ); ///< Returns the count of available video formats.
     get_video_format_count = _ic_grabber_dll.IC_GetVideoFormatCount
     get_video_format_count.restype = c_int
-    get_video_format_count.argtypes = (GrabberHandle,)
+    get_video_format_count.argtypes = (GrabberHandlePtr,)
     
     
     #//////////////////////////////////////////////////////////////////////////
@@ -811,7 +814,7 @@ class IC_GrabberDLL(object):
     #char* AC IC_GetVideoFormat( HGRABBER hGrabber, int iIndex ); ///<Return the name of a video format.
     get_video_format = _ic_grabber_dll.IC_GetVideoFormat
     get_video_format.restype = c_char_p
-    get_video_format.argtypes = (GrabberHandle,
+    get_video_format.argtypes = (GrabberHandlePtr,
                                  c_int)
     
     #//////////////////////////////////////////////////////////////////////////
@@ -920,7 +923,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetDisplayName( HGRABBER hGrabber, char *szDisplayname, int iLen); ///<Get the display name of a device.
     get_display_name = _ic_grabber_dll.IC_GetDisplayName
     get_display_name.restype = c_int
-    get_display_name.argtypes = (GrabberHandle,
+    get_display_name.argtypes = (GrabberHandlePtr,
                                  #c_char_p,
                                  POINTER(c_char),
                                  c_int)
@@ -939,7 +942,7 @@ class IC_GrabberDLL(object):
     #int AC IC_OpenDevByUniqueName( HGRABBER hGrabber, char *szDisplayname);
     open_device_by_unique_name = _ic_grabber_dll.IC_OpenDevByUniqueName
     open_device_by_unique_name.restype = c_int
-    open_device_by_unique_name.argtypes = (GrabberHandle,
+    open_device_by_unique_name.argtypes = (GrabberHandlePtr,
                                            c_char_p)
     
     #//////////////////////////////////////////////////////////////////////////
@@ -961,7 +964,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetUniqueName( HGRABBER hGrabber, char *szUniquename, int iLen); ///<Get a UniqueName from a currently open device.
     get_unique_name = _ic_grabber_dll.IC_GetUniqueName
     get_unique_name.restype = c_int
-    get_unique_name.argtypes = (GrabberHandle,
+    get_unique_name.argtypes = (GrabberHandlePtr,
                                 c_char_p,
                                 c_int)
     
@@ -976,7 +979,7 @@ class IC_GrabberDLL(object):
     #int AC IC_IsDevValid( HGRABBER hGrabber); ///<Returns whether a video capture device is valid.
     is_dev_valid = _ic_grabber_dll.IC_IsDevValid
     is_dev_valid.restype = c_int
-    is_dev_valid.argtypes = (GrabberHandle,)
+    is_dev_valid.argtypes = (GrabberHandlePtr,)
     
     #//////////////////////////////////////////////////////////////////////////
     #/*! Show the VCDProperty dialog. 
@@ -991,7 +994,7 @@ class IC_GrabberDLL(object):
     #int AC IC_ShowPropertyDialog( HGRABBER hGrabber ); ///<Show the VCDProperty dialog. 
     show_property_dialog = _ic_grabber_dll.IC_ShowPropertyDialog
     show_property_dialog.restype = c_int
-    show_property_dialog.argtypes = (GrabberHandle,)
+    show_property_dialog.argtypes = (GrabberHandlePtr,)
     
     #//////////////////////////////////////////////////////////////////////////
     #/*! Show the device selection dialog. This dialogs enables to select the 
@@ -1028,7 +1031,7 @@ class IC_GrabberDLL(object):
     #int AC IC_IsTriggerAvailable( HGRABBER hGrabber ); ///<Check for external trigger support.
     is_trigger_available = _ic_grabber_dll.IC_IsTriggerAvailable
     is_trigger_available.restype = c_int
-    is_trigger_available.argtypes = (GrabberHandle,)
+    is_trigger_available.argtypes = (GrabberHandlePtr,)
     
     #//////////////////////////////////////////////////////////////////////////
     #/*!    Enable or disable the external trigger. 
@@ -1043,7 +1046,7 @@ class IC_GrabberDLL(object):
     #int AC IC_EnableTrigger( HGRABBER hGrabber, int iEnable );
     enable_trigger = _ic_grabber_dll.IC_EnableTrigger
     enable_trigger.restype = c_int
-    enable_trigger.argtypes = (GrabberHandle,
+    enable_trigger.argtypes = (GrabberHandlePtr,
                                c_int)
 
     #//////////////////////////////////////////////////////////////////////////
@@ -1133,7 +1136,7 @@ class IC_GrabberDLL(object):
     #    void*                    x1_argument_in_void_userdata);
     set_frame_ready_callback = _ic_grabber_dll.IC_SetFrameReadyCallback
     set_frame_ready_callback.restype = c_int
-    set_frame_ready_callback.argtypes = (GrabberHandle,
+    set_frame_ready_callback.argtypes = (GrabberHandlePtr,
                                          c_void_p,
                                          c_void_p)
     
@@ -1171,7 +1174,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SetContinuousMode( HGRABBER hGrabber, int cont ); ///<Set Continuous mode.
     set_continuous_mode = _ic_grabber_dll.IC_SetContinuousMode
     set_continuous_mode.restype = c_int
-    set_continuous_mode.argtypes = (GrabberHandle,
+    set_continuous_mode.argtypes = (GrabberHandlePtr,
                                     c_int)
     
     #//////////////////////////////////////////////////////////////////////////
@@ -1218,7 +1221,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetTriggerModes( HGRABBER hGrabber,  char *szModeList, int iSize  ); ///<Get trigger modes.
     get_trigger_modes = _ic_grabber_dll.IC_GetTriggerModes
     get_trigger_modes.restype = c_int
-    get_trigger_modes.argtypes = (GrabberHandle,
+    get_trigger_modes.argtypes = (GrabberHandlePtr,
                                   POINTER((c_char * 20) * 10),    # hardcoded 10 values, each with 20 characters)
                                   c_int)
     
@@ -1238,7 +1241,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SetTriggerMode( HGRABBER hGrabber, char* szMode  ); ///<Set the trigger mode.
     set_trigger_mode = _ic_grabber_dll.IC_SetTriggerMode
     set_trigger_mode.restype = c_int
-    set_trigger_mode.argtypes = (GrabberHandle,
+    set_trigger_mode.argtypes = (GrabberHandlePtr,
                                  c_char_p)
     
     #//////////////////////////////////////////////////////////////////////////
@@ -1265,39 +1268,39 @@ class IC_GrabberDLL(object):
     #int AC IC_SetTriggerPolarity( HGRABBER hGrabber, int iPolarity ); ///< Set the trigger polarity.
     set_trigger_polarity = _ic_grabber_dll.IC_SetTriggerPolarity
     set_trigger_polarity.restype = c_int
-    set_trigger_polarity.argtypes = (GrabberHandle,
+    set_trigger_polarity.argtypes = (GrabberHandlePtr,
                                      c_int)
     
     #int AC IC_GetExpRegValRange( HGRABBER hGrabber, long *lMin, long *lMax ); ///< Retrieve exposure register values lower and upper limits.
     get_exp_reg_val_range = _ic_grabber_dll.IC_GetExpRegValRange
     get_exp_reg_val_range.restype = c_int
-    get_exp_reg_val_range.argtypes = (GrabberHandle,
+    get_exp_reg_val_range.argtypes = (GrabberHandlePtr,
                                       POINTER(c_long),
                                       POINTER(c_long))
         
     #int AC IC_GetExpRegVal( HGRABBER hGrabber, long *lValue ); ///< Retrieve the current register value of exposure.
     get_exp_reg_val = _ic_grabber_dll.IC_GetExpRegVal
     get_exp_reg_val.restype = c_int
-    get_exp_reg_val.argtypes = (GrabberHandle,
+    get_exp_reg_val.argtypes = (GrabberHandlePtr,
                                 POINTER(c_long))
     
     #int AC IC_SetExpRegVal( HGRABBER hGrabber, long lValue ); ///<Set a register value for exposure.
     set_exp_reg_val = _ic_grabber_dll.IC_SetExpRegVal
     set_exp_reg_val.restype = c_int
-    set_exp_reg_val.argtypes = (GrabberHandle,
+    set_exp_reg_val.argtypes = (GrabberHandlePtr,
                                 c_long)
     
     
     #int AC IC_EnableExpRegValAuto( HGRABBER hGrabber, int iOnOff ); ///<Enable or disable automatic of exposure.
     enable_exp_reg_val_auto = _ic_grabber_dll.IC_EnableExpRegValAuto
     enable_exp_reg_val_auto.restype = c_int
-    enable_exp_reg_val_auto.argtypes = (GrabberHandle,
+    enable_exp_reg_val_auto.argtypes = (GrabberHandlePtr,
                                         c_int)
     
     #int AC IC_GetExpRegValAuto( HGRABBER hGrabber, int *iOnOff );///<Check whether automatic exposure is enabled.
     get_exp_reg_val_auto = _ic_grabber_dll.IC_GetExpRegValAuto
     get_exp_reg_val_auto.restype = c_int
-    get_exp_reg_val_auto.argtypes = (GrabberHandle,
+    get_exp_reg_val_auto.argtypes = (GrabberHandlePtr,
                                      POINTER(c_int))
 
     
@@ -1310,25 +1313,25 @@ class IC_GrabberDLL(object):
     #int AC IC_IsExpAbsValAvailable( HGRABBER hGrabber);
     is_exp_abs_val_available = _ic_grabber_dll.IC_IsExpAbsValAvailable
     is_exp_abs_val_available.restype = c_int
-    is_exp_abs_val_available.argtypes = (GrabberHandle,)    
+    is_exp_abs_val_available.argtypes = (GrabberHandlePtr,)    
     
     #int AC IC_GetExpAbsValRange(HGRABBER hGrabber, float *fMin, float *fMax);
     get_exp_abs_val_range = _ic_grabber_dll.IC_GetExpAbsValRange
     get_exp_abs_val_range.restype = c_int
-    get_exp_abs_val_range.argtypes = (GrabberHandle,
+    get_exp_abs_val_range.argtypes = (GrabberHandlePtr,
                                       POINTER(c_float),
                                       POINTER(c_float))    
     
     #int AC IC_GetExpAbsVal(HGRABBER hGrabber, float *fValue);
     get_exp_abs_val = _ic_grabber_dll.IC_GetExpAbsVal
     get_exp_abs_val.restype = c_int
-    get_exp_abs_val.argtypes = (GrabberHandle,
+    get_exp_abs_val.argtypes = (GrabberHandlePtr,
                                 POINTER(c_float))
     
     #int AC IC_SetExpAbsVal(HGRABBER hGrabber,  float fValue );
     set_exp_abs_val = _ic_grabber_dll.IC_SetExpAbsVal
     set_exp_abs_val.restype = c_int
-    set_exp_abs_val.argtypes = (GrabberHandle,
+    set_exp_abs_val.argtypes = (GrabberHandlePtr,
                                 c_float)
     
     
@@ -1354,7 +1357,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetColorEnhancement(HGRABBER hGrabber, int *OnOff);
     get_color_enhancement = _ic_grabber_dll.IC_GetColorEnhancement
     get_color_enhancement.restype = c_int
-    get_color_enhancement.argtypes = (GrabberHandle,
+    get_color_enhancement.argtypes = (GrabberHandlePtr,
                                       POINTER(c_int))
     
     #///////////////////////////////////////////////////////////////////
@@ -1377,7 +1380,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SetColorEnhancement(HGRABBER hGrabber, int OnOff);
     set_color_enhancement = _ic_grabber_dll.IC_SetColorEnhancement
     set_color_enhancement.restype = c_int
-    set_color_enhancement.argtypes = (GrabberHandle,
+    set_color_enhancement.argtypes = (GrabberHandlePtr,
                                       c_int)
     
     #///////////////////////////////////////////////////////////////////
@@ -1396,7 +1399,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SoftwareTrigger(HGRABBER hGrabber);
     software_trigger = _ic_grabber_dll.IC_SoftwareTrigger
     software_trigger.restype = c_int
-    software_trigger.argtypes = (GrabberHandle,)
+    software_trigger.argtypes = (GrabberHandlePtr,)
     
     #///////////////////////////////////////////////////////////////////
     #/*! Sets a new frame rate. 
@@ -1411,7 +1414,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SetFrameRate(HGRABBER hGrabber,float FrameRate);
     set_frame_rate = _ic_grabber_dll.IC_SetFrameRate
     set_frame_rate.restype = c_int
-    set_frame_rate.argtypes = (GrabberHandle,
+    set_frame_rate.argtypes = (GrabberHandlePtr,
                                c_float)
     
     #///////////////////////////////////////////////////////////////////
@@ -1423,7 +1426,7 @@ class IC_GrabberDLL(object):
     #float AC IC_GetFrameRate(HGRABBER hGrabber);
     get_frame_rate = _ic_grabber_dll.IC_GetFrameRate
     get_frame_rate.restype = c_float
-    get_frame_rate.argtypes = (GrabberHandle,)
+    get_frame_rate.argtypes = (GrabberHandlePtr,)
     
     #int AC IC_SetWhiteBalanceAuto( HGRABBER hGrabber, int iOnOff);
     #
@@ -1500,7 +1503,7 @@ class IC_GrabberDLL(object):
     #int AC IC_ResetProperties(HGRABBER hGrabber);
     reset_properties = _ic_grabber_dll.IC_ResetProperties
     reset_properties.restype = c_int
-    reset_properties.argtypes = (GrabberHandle,)
+    reset_properties.argtypes = (GrabberHandlePtr,)
     
     #
     #
@@ -1625,7 +1628,7 @@ class IC_GrabberDLL(object):
     #int AC IC_IsPropertyAvailable(HGRABBER hGrabber, char* Property, char *Element );
     is_property_available = _ic_grabber_dll.IC_IsPropertyAvailable
     is_property_available.restype = c_int
-    is_property_available.argtypes = (GrabberHandle,
+    is_property_available.argtypes = (GrabberHandlePtr,
                                       c_char_p,
                                       c_char_p)
     
@@ -1679,7 +1682,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetPropertyValueRange(HGRABBER hGrabber, char* Property, char *Element, int *Min, int *Max );
     get_property_value_range = _ic_grabber_dll.IC_GetPropertyValueRange
     get_property_value_range.restype = c_int
-    get_property_value_range.argtypes = (GrabberHandle,
+    get_property_value_range.argtypes = (GrabberHandlePtr,
                                          c_char_p,
                                          c_char_p,
                                          POINTER(c_int),
@@ -1704,7 +1707,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetPropertyValue(HGRABBER hGrabber, char* Property, char *Element, int *Value );
     get_property_value = _ic_grabber_dll.IC_GetPropertyValue
     get_property_value.restype = c_int
-    get_property_value.argtypes = (GrabberHandle,
+    get_property_value.argtypes = (GrabberHandlePtr,
                                    c_char_p,
                                    c_char_p,
                                    POINTER(c_int))
@@ -1728,7 +1731,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SetPropertyValue(HGRABBER hGrabber, char* Property, char *Element, int Value );
     set_property_value = _ic_grabber_dll.IC_SetPropertyValue
     set_property_value.restype = c_int
-    set_property_value.argtypes = (GrabberHandle,
+    set_property_value.argtypes = (GrabberHandlePtr,
                                    c_char_p,
                                    c_char_p,
                                    c_int)
@@ -1753,7 +1756,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetPropertyAbsoluteValueRange(HGRABBER hGrabber, char* Property, char *Element, float *Min, float *Max );
     get_property_absolute_value_range = _ic_grabber_dll.IC_GetPropertyAbsoluteValueRange
     get_property_absolute_value_range.restype = c_int
-    get_property_absolute_value_range.argtypes = (GrabberHandle,
+    get_property_absolute_value_range.argtypes = (GrabberHandlePtr,
                                                   c_char_p,
                                                   c_char_p,
                                                   POINTER(c_float),
@@ -1779,7 +1782,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetPropertyAbsoluteValue(HGRABBER hGrabber, char* Property, char *Element, float *Value );
     get_property_absolute_value = _ic_grabber_dll.IC_GetPropertyAbsoluteValue
     get_property_absolute_value.restype = c_int
-    get_property_absolute_value.argtypes = (GrabberHandle,
+    get_property_absolute_value.argtypes = (GrabberHandlePtr,
                                             c_char_p,
                                             c_char_p,
                                             POINTER(c_float))
@@ -1804,7 +1807,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SetPropertyAbsoluteValue(HGRABBER hGrabber, char* Property, char *Element, float Value );
     set_property_absolute_value = _ic_grabber_dll.IC_SetPropertyAbsoluteValue
     set_property_absolute_value.restype = c_int
-    set_property_absolute_value.argtypes = (GrabberHandle,
+    set_property_absolute_value.argtypes = (GrabberHandlePtr,
                                             c_char_p,
                                             c_char_p,
                                             c_float)
@@ -1830,7 +1833,7 @@ class IC_GrabberDLL(object):
     #int AC IC_GetPropertySwitch(HGRABBER hGrabber, char* Property, char *Element, int *On );
     get_property_switch = _ic_grabber_dll.IC_GetPropertySwitch
     get_property_switch.restype = c_int
-    get_property_switch.argtypes = (GrabberHandle,
+    get_property_switch.argtypes = (GrabberHandlePtr,
                                     c_char_p,
                                     c_char_p,
                                     POINTER(c_int))
@@ -1856,7 +1859,7 @@ class IC_GrabberDLL(object):
     #int AC IC_SetPropertySwitch(HGRABBER hGrabber, char* Property, char *Element, int On );
     set_property_switch = _ic_grabber_dll.IC_SetPropertySwitch
     set_property_switch.restype = c_int
-    set_property_switch.argtypes = (GrabberHandle,
+    set_property_switch.argtypes = (GrabberHandlePtr,
                                     c_char_p,
                                     c_char_p,
                                     c_int)
@@ -2190,9 +2193,6 @@ class IC_GrabberDLL(object):
     def __init__(self):
         raise Exception("You probably don't want to instantiate this class!")
     
-        
-        
-        
-        
+
     
     
