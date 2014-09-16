@@ -1,29 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# todo list
-# color format type
-# buffer
-
 from IC_GrabberDLL import IC_GrabberDLL
 from IC_Camera import IC_Camera
 from IC_Exception import IC_Exception
 
 class IC_ImagingControl(object):
     
-    def __init__(self):
-        
-        # remember list of devices
-        self._unique_device_names = None
-        
-        # remember device objects
-        self._devices = {}
-        
     def init_library(self):
         """
         Initialise the IC Imaging Control library.
-        """        
-        # no license key
+        """
+        # remember list of unique device names
+        self._unique_device_names = None
+        
+        # remember device objects by unique name
+        self._devices = {}        
+        
+        # no license key needed anymore
         err = IC_GrabberDLL.init_library(None)
         if err != 1:
             raise IC_Exception(err)
@@ -70,12 +64,28 @@ class IC_ImagingControl(object):
                 
             return self._devices[unique_device_name]
         
-        raise IC_Exception(todo)
+        raise IC_Exception(-106)
     
     def close_library(self):
         """
-        Close the IC Imaging Control library.
-        """
+        Close the IC Imaging Control library, and close and release all references to camera devices.
+        """        
+        # release handle grabber objects of cameras as they won't be needed again.
+        # try to close & delete each known device, but only if we own the reference to it!
+        for unique_device_name in self.get_unique_device_names():
+            if unique_device_name in self._devices:
+                # close camera device if open
+                if self._devices[unique_device_name].is_open():
+                    self._devices[unique_device_name].close()
+                
+                # release grabber of camera device
+                IC_GrabberDLL.release_grabber(self._devices[unique_device_name]._handle)
+        
+        # kill refs
+        self._unique_device_names = None
+        self._devices = None
+        
+        # close lib        
         IC_GrabberDLL.close_library()
         
         
