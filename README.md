@@ -22,7 +22,6 @@ Install pyicic.
 
 A code example showing image capture with a camera using an external hardware trigger.
 
-    from ctypes import *
     from pyicic.IC_ImagingControl import *
     
     # open lib
