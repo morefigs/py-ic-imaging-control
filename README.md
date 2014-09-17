@@ -44,12 +44,14 @@ A code example showing image capture with a camera using an external hardware tr
     print cam.exposure.value                # 5
     
     # change camera settings
-    cam.enable_trigger(True)                # camera will wait for trigger
-    cam.set_video_format('RGB24 (640x480)')
-    if not cam.callback_registered:
-        cam.register_frame_ready_callback() # needed to wait for frame ready callback
+    formats = cam.list_video_formats()
+    cam.set_video_format(formats[0])        # use first available video format
     cam.enable_continuous_mode(True)        # image in continuous mode
     cam.start_live(show_display=True)       # start imaging
+    
+    cam.enable_trigger(True)                # camera will wait for trigger
+    if not cam.callback_registered:
+        cam.register_frame_ready_callback() # needed to wait for frame ready callback
     
     for i in xrange(10):                        # take 10 shots
         cam.reset_frame_ready()                 # reset frame ready flag
