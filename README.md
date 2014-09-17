@@ -23,16 +23,18 @@ Install pyicic.
 A code example showing image capture with a camera using an external hardware trigger.
 
     from ctypes import *
-    from pyicic.IC_ImagingControl import IC_ImagingControl
+    from pyicic.IC_ImagingControl import *
     
-    icic = IC_ImagingControl()
-    icic.init_library()
-    
-    cam_names = icic.get_unique_device_names()
-    cam_name = cam_names[0]
-    cam = icic.get_device(cam_name)
+    # open lib
+    ic_ic = IC_ImagingControl()
+    ic_ic.init_library()
+
+    # open first available camera device
+    cam_names = ic_ic.get_unique_device_names()
+    cam = ic_ic.get_device(cam_names[0])
     cam.open()
-    
+
+    # change camera properties
     print cam.list_property_names()         # ['gain', 'exposure', 'hue', etc...]
     cam.gain.auto = True                    # enable auto gain
     print cam.exposure.range                # (0, 10)
@@ -41,6 +43,7 @@ A code example showing image capture with a camera using an external hardware tr
     cam.exposure.value = (emin + emax) / 2  # disables auto exposure and sets value to half of range
     print cam.exposure.value                # 5
     
+    # change camera settings
     cam.enable_trigger(True)                # camera will wait for trigger
     cam.set_video_format('RGB24 (640x480)')
     if not cam.callback_registered:
@@ -50,16 +53,17 @@ A code example showing image capture with a camera using an external hardware tr
     
     for i in xrange(10):                        # take 10 shots
         cam.reset_frame_ready()                 # reset frame ready flag
-        cam.wait_til_frame_ready(3000)          # wait up to 3 seconds for a trigger
         
-        img_ptr = cam.get_buffer()              # do something with a direct pointer to image data...
-        img = cast(img_ptr, POINTER(c_ubyte * 640 * 480 * 3))
+        # send hardware trigger OR call cam.send_trigger() here
+        cam.send_trigger()
         
-        cam.save_image(''.join(['image-',       # or just save image using IC library
+        cam.wait_til_frame_ready()              # wait for frame ready due to trigger
+        cam.save_image(''.join(['image-',       # save image
                                 str(i),
                                 '.jpg']), 1)
-          
-    cam.stop_live()
     
-    icic.close_library()
+    cam.stop_live()
+    cam.close()
+
+    ic_ic.close_library()
     
