@@ -58,7 +58,7 @@ A code example showing image capture with a camera using an external hardware tr
         # send hardware trigger OR call cam.send_trigger() here
         cam.send_trigger()
         
-        cam.wait_til_frame_ready()              # wait for frame ready due to trigger
+        cam.wait_til_frame_ready(1000)              # wait for frame ready due to trigger
         cam.save_image(''.join(['image-',       # save image
                                 str(i),
                                 '.jpg']), 1)
