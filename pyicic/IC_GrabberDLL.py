@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from builtins import object
 from ctypes import *
 import os
 
-import IC_Structures as structs
+from . import IC_Structures as structs
 
 class IC_GrabberDLL(object):
     """

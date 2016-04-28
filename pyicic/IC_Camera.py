@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import division
+from builtins import object
+from past.utils import old_div
 from ctypes import *
 import time
 
-from IC_GrabberDLL import IC_GrabberDLL
-from IC_Exception import IC_Exception
-from IC_Property import IC_Property
-import IC_Structures as structs
+from .IC_GrabberDLL import IC_GrabberDLL
+from .IC_Exception import IC_Exception
+from .IC_Property import IC_Property
+from . import IC_Structures as structs
 
 GrabberHandlePtr = POINTER(structs.GrabberHandle)
 
@@ -381,7 +385,7 @@ class IC_Camera(object):
         
         img_width = image_size[0]
         img_height = image_size[1]
-        img_depth = image_size[2] / 8
+        img_depth = old_div(image_size[2], 8)
         buffer_size = img_width * img_height * img_depth * sizeof(c_uint8)
 
         img_ptr = self.get_image_ptr()
