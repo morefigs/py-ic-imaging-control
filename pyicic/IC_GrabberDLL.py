@@ -13,14 +13,8 @@ class IC_GrabberDLL(object):
     
     GrabberHandlePtr = POINTER(structs.GrabberHandle)
     
-    # check path
-    dll_path = os.path.join(os.path.expanduser('~'),
-                            'Documents\\The Imaging Source Europe GmbH\\TIS Grabber DLL\\bin\\win32\\tisgrabber.dll')
-    with open(dll_path) as thefile:
-        pass
-    
     # win32
-    _ic_grabber_dll = windll.LoadLibrary(dll_path)
+    _ic_grabber_dll = windll.LoadLibrary('tisgrabber.dll')
 
     #//////////////////////////////////////////////////////////////////////////
     #/*! Initialize the ICImagingControl class library. This function must be called
