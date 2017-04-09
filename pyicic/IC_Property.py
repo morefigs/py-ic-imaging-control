@@ -75,8 +75,9 @@ class IC_Property(object):
         """
         """
         
-        # turn off auto first
-        self.auto = False
+        if self.auto_available:
+            # turn off auto first
+            self.auto = False
         
         # set value
         err = self._set_value_funcs[self._prop_type](self._handle,
