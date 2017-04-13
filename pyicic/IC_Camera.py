@@ -487,12 +487,15 @@ class IC_Camera(object):
 
         return C_FRAME_READY_CALLBACK(cb_func)
     
-    def register_frame_ready_callback(self):
+    def register_frame_ready_callback(self, callback=None):
         """
         Register the frame ready callback with the device.
         """
-        # keep ref to prevent garbage collection
-        self._rfrc_func = self._get_callback_func()
+        if callback is None:
+            # keep ref to prevent garbage collection
+            self._rfrc_func = self._get_callback_func()
+        else:
+            self._rfrc_func = callback
         
         # register callback function with DLL
         # instead of passing pointer to a variable (3rd param) we will set the flag ourselves
