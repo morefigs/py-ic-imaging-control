@@ -133,6 +133,28 @@ class IC_Camera(object):
         """
         return IC_GrabberDLL.reset_properties(self._handle)
         
+    def save_device_state_to_file(self, filename):
+        """
+        Save the state of a video capture device to a file.
+        
+        :param filename: string -- name of the file where to save to.
+        """
+        err = IC_GrabberDLL.save_device_state_to_file(self._handle,
+                                                      c_char_p(filename))
+        if err != 1:
+            raise IC_Exception(err)
+            
+    def load_device_state_from_file(self, filename):
+        """
+        Load a device settings file. On success the device is opened automatically.
+        
+        :param filename: string -- name of the file where to load from.
+        """
+        self._handle = IC_GrabberDLL.load_device_state_from_file(self._handle,
+                                                                 c_char_p(filename))
+        if not self._handle:
+            raise IC_Exception(todo)
+        
     def list_video_formats(self):
         """
         :returns: list -- available video formats.

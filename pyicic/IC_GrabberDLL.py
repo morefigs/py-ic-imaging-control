@@ -823,13 +823,17 @@ class IC_GrabberDLL(object):
     #    @sa IC_LoadDeviceStateFromFile
     #*/
     #int AC IC_SaveDeviceStateToFile(HGRABBER hGrabber, char* szFileName);///<Save the state of a video capture device to a file. 
-    #
+    save_device_state_to_file = _ic_grabber_dll.IC_SaveDeviceStateToFile
+    save_device_state_to_file.restype = c_int
+    save_device_state_to_file.argtypes = (GrabberHandlePtr,
+                                          c_char_p)
+    
     #//////////////////////////////////////////////////////////////////////////
     #/*! Load a device settings file. On success the device is opened automatically.
     #
     #    @param hGrabber The handle to the grabber object. If it is NULL then a new HGRABBER handle is
     #                    created. This should be released by a call to IC_ReleaseGrabber when it is no longer needed.
-    #    @param szFileName Name of the file where to save to.
+    #    @param szFileName Name of the file where to load from.
     #
     #    @return HGRABBER The handle of the grabber object, that contains the new opened video capture device.
     #
@@ -837,8 +841,11 @@ class IC_GrabberDLL(object):
     #    @sa IC_ReleaseGrabber
     #*/
     #HGRABBER AC IC_LoadDeviceStateFromFile(HGRABBER hGrabber, char* szFileName); ///<Load a device settings file.
-    #
-    #
+    load_device_state_from_file = _ic_grabber_dll.IC_LoadDeviceStateFromFile
+    load_device_state_from_file.restype = GrabberHandlePtr
+    load_device_state_from_file.argtypes = (GrabberHandlePtr,
+                                            c_char_p)
+
     #//////////////////////////////////////////////////////////////////////////
     #/*! Save the device settings to a file specified by szFilename. When used 
     #    with IC Imaging Control 1.41 the device name, the input channel, the 
