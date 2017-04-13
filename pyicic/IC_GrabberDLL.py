@@ -14,7 +14,7 @@ class IC_GrabberDLL(object):
     GrabberHandlePtr = POINTER(structs.GrabberHandle)
     
     # win32
-    _ic_grabber_dll = windll.LoadLibrary('tisgrabber.dll')
+    _ic_grabber_dll = windll.LoadLibrary('tisgrabber_x64.dll')
 
     #//////////////////////////////////////////////////////////////////////////
     #/*! Initialize the ICImagingControl class library. This function must be called
@@ -1946,7 +1946,10 @@ class IC_GrabberDLL(object):
     #    @retval The count of found frame filters.
     #*/
     #int AC IC_GetAvailableFrameFilterCount();
-    #
+    get_available_frame_filter_count = _ic_grabber_dll.IC_GetAvailableFrameFilterCount
+    get_available_frame_filter_count.restype = c_int
+    get_available_frame_filter_count.argtypes = None
+    
     #//////////////////////////////////////////////////////////////////
     #/*! Query a list of framefilters
     #
@@ -1966,11 +1969,10 @@ class IC_GrabberDLL(object):
     #    @endcode
     #*/
     #int AC IC_GetAvailableFrameFilters(char **szFilterList, int iSize );
-    #get_available_frame_filters = _ic_grabber_dll.IC_GetAvailableFrameFilters
-    #get_available_frame_filters.restype = c_int
-    #get_available_frame_filters.argtypes = (POINTER((c_char * 80) * 40),
-    #                                        c_int)
-    #    ^ wrong code
+    get_available_frame_filters = _ic_grabber_dll.IC_GetAvailableFrameFilters
+    get_available_frame_filters.restype = c_int
+    get_available_frame_filters.argtypes = (POINTER(POINTER((c_char * 80) * 40)),
+                                            c_int)
     
     #//////////////////////////////////////////////////////////////////
     #/*! Create a frame filter
@@ -1982,7 +1984,10 @@ class IC_GrabberDLL(object):
     #*/
     #
     #int AC IC_CreateFrameFilter(char *szFilterName, HFRAMEFILTER *FilterHandle );
-    #
+    create_frame_filter = _ic_grabber_dll.IC_CreateFrameFilter
+    create_frame_filter.restype = c_int
+    create_frame_filter.argtypes = (c_char_p, POINTER(structs.FrameFilterHandle))
+    
     #//////////////////////////////////////////////////////////////////
     #/*! Add the frame filter to the device
     #    @param hGrabber    Handle to a grabber object.
@@ -1992,7 +1997,11 @@ class IC_GrabberDLL(object):
     #    @retval IC_ERROR Either hGrabber or FilterHandle was NULL
     #*/
     #int AC IC_AddFrameFilterToDevice(HGRABBER hGrabber, HFRAMEFILTER FilterHandle );
-    #
+    add_frame_filter_to_device = _ic_grabber_dll.IC_AddFrameFilterToDevice
+    add_frame_filter_to_device.restype = c_int
+    add_frame_filter_to_device.argtypes = (GrabberHandlePtr,
+                                           POINTER(structs.FrameFilterHandle))
+    
     #//////////////////////////////////////////////////////////////////
     #/*! Deletes a previously created frame filter.
     #    @param FilterHandle    Handle to a frame filter object.
@@ -2022,7 +2031,12 @@ class IC_GrabberDLL(object):
     #
     #*/
     #int AC IC_FrameFilterGetParameter(HFRAMEFILTER FilterHandle, char* ParameterName, void* Data );
-    #
+    frame_filter_get_parameter = _ic_grabber_dll.IC_FrameFilterGetParameter
+    frame_filter_get_parameter.restype = c_int
+    frame_filter_get_parameter.argtypes = (POINTER(structs.FrameFilterHandle),
+                                           c_char_p,
+                                           c_void_p)
+    
     #/*! Set an int parameter value of a frame filter
     #    @param FilterHandle    Handle to a frame filter object.
     #    @param ParameterName Name of the parameter whose value is to be set
@@ -2034,7 +2048,12 @@ class IC_GrabberDLL(object):
     #    @retval IC_ERROR  Unknown error
     #*/
     #int AC IC_FrameFilterSetParameterInt(HFRAMEFILTER FilterHandle, char* ParameterName, int Data );
-    #
+    frame_filter_set_parameter_int = _ic_grabber_dll.IC_FrameFilterSetParameterInt
+    frame_filter_set_parameter_int.restype = c_int
+    frame_filter_set_parameter_int.argtypes = (POINTER(structs.FrameFilterHandle),
+                                               c_char_p,
+                                               c_int)
+    
     #/*! Set a float parameter value of a frame filter
     #    @param FilterHandle    Handle to a frame filter object.
     #    @param ParameterName Name of the parameter whose value is to be set
