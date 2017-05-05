@@ -137,6 +137,28 @@ class IC_Camera(object):
         """
         return IC_GrabberDLL.reset_properties(self._handle)
         
+    def save_device_state_to_file(self, filename):
+        """
+        Save the state of a video capture device to a file.
+        
+        :param filename: string -- name of the file where to save to.
+        """
+        err = IC_GrabberDLL.save_device_state_to_file(self._handle,
+                                                      c_char_p(filename))
+        if err != 1:
+            raise IC_Exception(err)
+            
+    def load_device_state_from_file(self, filename):
+        """
+        Load a device settings file. On success the device is opened automatically.
+        
+        :param filename: string -- name of the file where to load from.
+        """
+        self._handle = IC_GrabberDLL.load_device_state_from_file(self._handle,
+                                                                 c_char_p(filename))
+        if not self._handle:
+            raise IC_Exception(todo)
+        
     def list_video_formats(self):
         """
         :returns: list -- available video formats.
@@ -289,6 +311,51 @@ class IC_Camera(object):
         if err != 1:
             #raise IC_Exception(err)
             pass # todo, always raises false error for some reason...?
+            
+    def get_available_frame_filter_count(self):
+        """
+        Query number of avaialable frame filters
+        """
+        return IC_GrabberDLL.get_available_frame_filter_count()
+        
+    def get_available_frame_filters(self, number_of_filters):
+        # TODO: Didn't manage to implement this function as of yet.
+        # It requires a pointer to an array of pointers to arrays of chars.
+        pass
+        
+    def create_frame_filter(self, name):
+        frame_filter_handle = structs.FrameFilterHandle()
+        
+        err = IC_GrabberDLL.create_frame_filter(c_char_p(name), byref(frame_filter_handle))
+        if err != 1:
+            raise IC_Exception(err)
+            
+        return frame_filter_handle
+        
+    def add_frame_filter_to_device(self, frame_filter_handle):
+        err = IC_GrabberDLL.add_frame_filter_to_device(self._handle, frame_filter_handle)
+        if err != 1:
+            raise IC_Exception(err)
+            
+    def frame_filter_get_parameter(self, frame_filter_handle, parameter_name):
+        data = c_int()
+        
+        err = IC_GrabberDLL.frame_filter_get_parameter(frame_filter_handle, parameter_name, byref(data))
+        if err != 1:
+            raise IC_Exception(err)
+            
+        return data
+            
+    def frame_filter_set_parameter(self, frame_filter_handle, parameter_name, data):
+        if type(data) is int:
+            err = IC_GrabberDLL.frame_filter_set_parameter_int(frame_filter_handle,
+                                                               c_char_p(parameter_name),
+                                                               c_int(data))
+        else:
+            IC_Exception('Unknown set parameter type')
+            
+        if err != 1:
+            raise IC_Exception(err)
 
     def send_trigger(self):
         """
