@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from builtins import object
 from ctypes import *
 
-from IC_GrabberDLL import IC_GrabberDLL
-from IC_Exception import IC_Exception
+from .IC_GrabberDLL import IC_GrabberDLL
+from .IC_Exception import IC_Exception
 
 class IC_Property(object):
 
