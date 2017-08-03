@@ -8,6 +8,7 @@ from .IC_GrabberDLL import IC_GrabberDLL
 from .IC_Camera import IC_Camera
 from .IC_Exception import IC_Exception
 
+
 class IC_ImagingControl(object):
     
     def init_library(self):
@@ -90,5 +91,5 @@ class IC_ImagingControl(object):
         
         # close lib        
         IC_GrabberDLL.close_library()
-        
-        
+
+

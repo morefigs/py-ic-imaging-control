@@ -1482,6 +1482,10 @@ class IC_GrabberDLL(object):
     #
     #*/
     #int AC IC_FocusOnePush(HGRABBER hGrabber);
+    focus_one_push = _ic_grabber_dll.IC_FocusOnePush
+    focus_one_push.restype = c_int
+    focus_one_push.argtypes = (GrabberHandlePtr,)
+
     #
     #
     #

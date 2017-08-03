@@ -12,6 +12,7 @@ from .IC_Exception import IC_Exception
 from .IC_Property import IC_Property
 from . import IC_Structures as structs
 
+
 GrabberHandlePtr = POINTER(structs.GrabberHandle)
 
 # "typedefs"
@@ -27,6 +28,7 @@ COLOR_FORMAT = ['Y800',
 # c function type for frame callback
 # outside of class so it can be called by unbound function
 C_FRAME_READY_CALLBACK = CFUNCTYPE(None, GrabberHandlePtr, POINTER(c_ubyte), c_ulong, c_void_p)
+
 
 class IC_Camera(object):
     
@@ -286,7 +288,16 @@ class IC_Camera(object):
         err = IC_GrabberDLL.set_frame_rate(self._handle, c_float(frame_rate))
         if err != 1:
             raise IC_Exception(err)
-    
+
+    def focus_one_push(self):
+        """
+        Performs the one push for focus.
+        :return: None
+        """
+        err = IC_GrabberDLL.focus_one_push(self._handle)
+        if err != 1:
+            raise IC_Exception(err)
+
     def enable_trigger(self, enable):
         """
         Enable or disable camera triggering.
