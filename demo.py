@@ -9,7 +9,8 @@ ic = IC_ImagingControl()
 ic.init_library()
 
 cam_names = ic.get_unique_device_names()
-device_name = cam_names[1]
+print cam_names
+device_name = cam_names[0]
 
 print device_name
 
