@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from builtins import object
 from ctypes import *
 import os
+import sys
 
 from . import IC_Structures as structs
 
@@ -16,7 +17,11 @@ class IC_GrabberDLL(object):
     GrabberHandlePtr = POINTER(structs.GrabberHandle)
     
     # win32
-    _ic_grabber_dll = windll.LoadLibrary('tisgrabber_x64.dll')
+    if sys.maxsize > 2**32:
+        _ic_grabber_dll = windll.LoadLibrary('tisgrabber_x64.dll')
+    else:
+        _ic_grabber_dll = windll.LoadLibrary('tisgrabber.dll')
+
 
     #//////////////////////////////////////////////////////////////////////////
     #/*! Initialize the ICImagingControl class library. This function must be called
