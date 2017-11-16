@@ -164,17 +164,7 @@ class IC_Camera(object):
         """
         :returns: list -- available video formats.
         """
-        vf_list = ((c_char * 80) * 40)()
-        num_vfs = IC_GrabberDLL.list_video_formats(self._handle,
-                                                   byref(vf_list),
-                                                   c_int(80))
-        if num_vfs < 0:
-            raise IC_Exception(num_vfs)
-        return_list = []
-        for vf in vf_list:
-            if vf.value:
-                return_list.append(vf.value)
-        return return_list
+        return [self.get_video_format(idx) for idx in range(self.get_video_format_count())]
     
     def get_video_norm_count(self):
         """
@@ -544,9 +534,3 @@ class IC_Camera(object):
                 time.sleep(0.001)
 
         return self._frame['num']
-    
-    
-    
-    
-    
-    
