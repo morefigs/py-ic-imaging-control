@@ -534,3 +534,14 @@ class IC_Camera(object):
                 time.sleep(0.001)
 
         return self._frame['num']
+    
+    def remove_overlay(self, enable):
+        """
+        Enables or disables the overlay. Disable the overlay to capture Y16 images.
+
+        :param enable: 1 to enable the overlay; 0 to disable the overlay.
+
+        :returns: Nothing.
+        """
+        IC_GrabberDLL.remove_overlay(self._handle, enable)
+        return
