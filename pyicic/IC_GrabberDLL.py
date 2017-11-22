@@ -652,7 +652,7 @@ class IC_GrabberDLL(object):
     list_video_formats = _ic_grabber_dll.IC_ListVideoFormats
     list_video_formats.restype = c_int
     list_video_formats.argtypes = (GrabberHandlePtr,
-                                   POINTER((c_char * 80) * 40),
+                                   POINTER((c_char * 40) * 80),
                                    c_int)
     
     #//////////////////////////////////////////////////////////////////////////
@@ -1065,7 +1065,11 @@ class IC_GrabberDLL(object):
     #    @param iEnable = 1 inserts overlay, 0 removes the overlay.
     #*/
     #void AC IC_RemoveOverlay( HGRABBER hGrabber, int iEnable );
-    #
+    remove_overlay = _ic_grabber_dll.IC_RemoveOverlay
+    remove_overlay.restype = None
+    enable_trigger.argtypes = (GrabberHandlePtr,
+                               c_int)
+
     #//////////////////////////////////////////////////////////////////////////
     #/*!    Enable or disable the overlay bitmap on the live video
     #    @param hGrabber      Handle to a grabber object.
