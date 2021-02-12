@@ -5,7 +5,7 @@ from ctypes import *
 import os
 import sys
 
-import IC_Structures as structs
+from . import IC_Structures as structs
 
 class IC_GrabberDLL(object):
     """

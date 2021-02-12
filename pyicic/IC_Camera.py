@@ -4,10 +4,10 @@
 from ctypes import *
 import time
 
-from IC_GrabberDLL import IC_GrabberDLL
-from IC_Exception import IC_Exception
-from IC_Property import IC_Property
-import IC_Structures as structs
+from .IC_GrabberDLL import IC_GrabberDLL
+from .IC_Exception import IC_Exception
+from .IC_Property import IC_Property
+from . import IC_Structures as structs
 
 GrabberHandlePtr = POINTER(structs.GrabberHandle)
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from IC_GrabberDLL import IC_GrabberDLL
-from IC_Camera import IC_Camera
-from IC_Exception import IC_Exception
+from .IC_GrabberDLL import IC_GrabberDLL
+from .IC_Camera import IC_Camera
+from .IC_Exception import IC_Exception
 
 class IC_ImagingControl(object):
     
@@ -39,7 +39,7 @@ class IC_ImagingControl(object):
                 raise IC_Exception(num_devices)
             
             # populate list
-            for i in xrange(num_devices):
+            for i in range(num_devices):
                 self._unique_device_names.append(IC_GrabberDLL.get_unique_name_from_list(i))
         
         return self._unique_device_names
