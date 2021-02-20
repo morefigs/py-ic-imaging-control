@@ -25,7 +25,7 @@ COLOR_FORMAT = ['Y800',
 # outside of class so it can be called by unbound function
 C_FRAME_READY_CALLBACK = CFUNCTYPE(None, GrabberHandlePtr, POINTER(c_ubyte), c_ulong, c_void_p)
 
-class IC_Camera(object):
+class IC_Camera:
     
     @property
     def callback_registered(self):

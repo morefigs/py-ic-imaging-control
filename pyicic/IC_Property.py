@@ -6,7 +6,7 @@ from ctypes import *
 from .IC_GrabberDLL import IC_GrabberDLL
 from .IC_Exception import IC_Exception
 
-class IC_Property(object):
+class IC_Property:
 
     @property
     def available(self):
