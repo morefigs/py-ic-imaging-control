@@ -69,7 +69,7 @@ class IC_Camera:
         Open the camera device, required for most functions.
         """
         err = IC_GrabberDLL.open_device_by_unique_name(self._handle,
-                                                       self._unique_device_name)
+                                                       self._unique_device_name.encode('ascii'))
         if err != 1:
             raise IC_Exception(err)
     
@@ -140,7 +140,7 @@ class IC_Camera:
         :param filename: string -- name of the file where to save to.
         """
         err = IC_GrabberDLL.save_device_state_to_file(self._handle,
-                                                      c_char_p(filename))
+                                                      c_char_p(filename.encode('ascii')))
         if err != 1:
             raise IC_Exception(err)
             
@@ -151,7 +151,7 @@ class IC_Camera:
         :param filename: string -- name of the file where to load from.
         """
         self._handle = IC_GrabberDLL.load_device_state_from_file(self._handle,
-                                                                 c_char_p(filename))
+                                                                 c_char_p(filename.encode('ascii')))
         if not self._handle:
             raise IC_Exception(todo)
         
@@ -168,7 +168,7 @@ class IC_Camera:
         return_list = []
         for vf in vf_list:
             if vf.value:
-                return_list.append(vf.value)
+                return_list.append(vf.value.decode('ascii'))
         return return_list
     
     def get_video_norm_count(self):
@@ -223,7 +223,7 @@ class IC_Camera:
         vf = IC_GrabberDLL.get_video_format(self._handle, c_int(format_index))
         if vf is None:
             raise IC_Exception(-105)
-        return vf
+        return vf.decode('ascii')
     
     def set_video_format(self, video_format):
         """
@@ -231,7 +231,7 @@ class IC_Camera:
         
         :param video_format: string -- video format to use.
         """
-        err = IC_GrabberDLL.set_video_format(self._handle, c_char_p(video_format))
+        err = IC_GrabberDLL.set_video_format(self._handle, c_char_p(video_format.encode('ascii')))
         if err != 1:
             raise IC_Exception(err)
 
@@ -241,7 +241,7 @@ class IC_Camera:
         
         :param video_norm: string -- video norm to use.
         """
-        err = IC_GrabberDLL.set_video_norm(self._handle, c_char_p(video_norm))
+        err = IC_GrabberDLL.set_video_norm(self._handle, c_char_p(video_norm.encode('ascii')))
         if err != 1:
             raise IC_Exception(err)
     
@@ -321,8 +321,8 @@ class IC_Camera:
         
     def create_frame_filter(self, name):
         frame_filter_handle = structs.FrameFilterHandle()
-        
-        err = IC_GrabberDLL.create_frame_filter(c_char_p(name), byref(frame_filter_handle))
+
+        err = IC_GrabberDLL.create_frame_filter(c_char_p(name.encode('ascii')), byref(frame_filter_handle))
         if err != 1:
             raise IC_Exception(err)
             
@@ -336,7 +336,7 @@ class IC_Camera:
     def frame_filter_get_parameter(self, frame_filter_handle, parameter_name):
         data = c_int()
         
-        err = IC_GrabberDLL.frame_filter_get_parameter(frame_filter_handle, parameter_name, byref(data))
+        err = IC_GrabberDLL.frame_filter_get_parameter(frame_filter_handle, parameter_name.encode('ascii'), byref(data))
         if err != 1:
             raise IC_Exception(err)
             
@@ -345,7 +345,7 @@ class IC_Camera:
     def frame_filter_set_parameter(self, frame_filter_handle, parameter_name, data):
         if type(data) is int:
             err = IC_GrabberDLL.frame_filter_set_parameter_int(frame_filter_handle,
-                                                               c_char_p(parameter_name),
+                                                               c_char_p(parameter_name.encode('ascii')),
                                                                c_int(data))
         else:
             IC_Exception('Unknown set parameter type')
@@ -448,7 +448,7 @@ class IC_Camera:
         
         img_width = image_size[0]
         img_height = image_size[1]
-        img_depth = image_size[2] / 8
+        img_depth = int(image_size[2] / 8)
         buffer_size = img_width * img_height * img_depth * sizeof(c_uint8)
 
         img_ptr = self.get_image_ptr()
@@ -472,7 +472,7 @@ class IC_Camera:
         :param jpeq_quality: int -- JPEG file quality, 0-100.
         """
         err = IC_GrabberDLL.save_image(self._handle,
-                                       c_char_p(filename),
+                                       c_char_p(filename.encode('ascii')),
                                        c_int(filetype),
                                        c_long(jpeq_quality))
         if err != 1:

@@ -40,7 +40,7 @@ class IC_ImagingControl:
             
             # populate list
             for i in range(num_devices):
-                self._unique_device_names.append(IC_GrabberDLL.get_unique_name_from_list(i))
+                self._unique_device_names.append(IC_GrabberDLL.get_unique_name_from_list(i).decode('ascii'))
         
         return self._unique_device_names
     
