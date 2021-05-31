@@ -3,23 +3,19 @@ import time
 import numpy as np
 
 from pyicic.IC_ImagingControl import *
-from pyicic.IC_Camera import C_FRAME_READY_CALLBACK
+from pyicic.IC_Camera import IC_Camera, C_FRAME_READY_CALLBACK
 
 ic = IC_ImagingControl()
 ic.init_library()
 
 cam_names = ic.get_unique_device_names()
-print(cam_names)
 device_name = cam_names[0]
 
-print(device_name)
-
-cam = ic.get_device(device_name)
+cam: IC_Camera = ic.get_device(device_name)
 cam.open()
 cam.reset_properties()
 
 formats = cam.list_video_formats()
-print(formats)
 cam.set_video_format(formats[2])
 
 print('get_available_frame_filter_count:', cam.get_available_frame_filter_count())
@@ -55,8 +51,6 @@ input('Waiting for callback')
 cam.save_image('output.jpg')
         
 data, width, height, depth = cam.get_image_data()
-
-print(width, height)
 
 frame = np.ndarray(buffer=data,
                    dtype=np.uint8,
