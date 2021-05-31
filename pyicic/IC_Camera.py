@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+from __future__ import division
+from builtins import object
 from ctypes import *
 import time
 
@@ -8,6 +11,7 @@ from .IC_GrabberDLL import IC_GrabberDLL
 from .IC_Exception import IC_Exception
 from .IC_Property import IC_Property
 from . import IC_Structures as structs
+
 
 GrabberHandlePtr = POINTER(structs.GrabberHandle)
 
@@ -159,17 +163,7 @@ class IC_Camera:
         """
         :returns: list -- available video formats.
         """
-        vf_list = ((c_char * 80) * 40)()
-        num_vfs = IC_GrabberDLL.list_video_formats(self._handle,
-                                                   byref(vf_list),
-                                                   c_int(80))
-        if num_vfs < 0:
-            raise IC_Exception(num_vfs)
-        return_list = []
-        for vf in vf_list:
-            if vf.value:
-                return_list.append(vf.value.decode('ascii'))
-        return return_list
+        return [self.get_video_format(idx) for idx in range(self.get_video_format_count())]
     
     def get_video_norm_count(self):
         """
@@ -283,7 +277,16 @@ class IC_Camera:
         err = IC_GrabberDLL.set_frame_rate(self._handle, c_float(frame_rate))
         if err != 1:
             raise IC_Exception(err)
-    
+
+    def focus_one_push(self):
+        """
+        Performs the one push for focus.
+        :return: None
+        """
+        err = IC_GrabberDLL.focus_one_push(self._handle)
+        if err != 1:
+            raise IC_Exception(err)
+
     def enable_trigger(self, enable):
         """
         Enable or disable camera triggering.
@@ -448,7 +451,7 @@ class IC_Camera:
         
         img_width = image_size[0]
         img_height = image_size[1]
-        img_depth = int(image_size[2] / 8)
+        img_depth = image_size[2] // 8
         buffer_size = img_width * img_height * img_depth * sizeof(c_uint8)
 
         img_ptr = self.get_image_ptr()
@@ -531,8 +534,13 @@ class IC_Camera:
 
         return self._frame['num']
     
-    
-    
-    
-    
-    
+    def remove_overlay(self, enable):
+        """
+        Enables or disables the overlay. Disable the overlay to capture Y16 images.
+
+        :param enable: 1 to enable the overlay; 0 to disable the overlay.
+
+        :returns: Nothing.
+        """
+        IC_GrabberDLL.remove_overlay(self._handle, enable)
+        return

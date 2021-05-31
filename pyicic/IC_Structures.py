@@ -3,14 +3,17 @@
 
 from ctypes import *
 
+
 class GrabberHandle(Structure):
     pass
 GrabberHandle._fields_ = [('unused', c_int)]
+
 
 class FilterParameter(Structure):
     pass
 FilterParameter._fields_ = [('Name', c_char * 30),
                             ('Type', c_int)]
+
 
 class FrameFilterHandle(Structure):
     pass

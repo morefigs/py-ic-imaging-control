@@ -8,6 +8,7 @@ import sys
 
 from . import IC_Structures as structs
 
+
 class IC_GrabberDLL:
     """
     ctypes funcs to talk to tisgrabber.dll.
@@ -367,8 +368,8 @@ class IC_GrabberDLL:
     #int AC IC_IsCameraPropertyAutoAvailable( HGRABBER hGrabber, CAMERA_PROPERTY iProperty ); ///<Check whether automation for a camera property is available.
     is_camera_property_auto_available = _ic_grabber_dll.IC_IsCameraPropertyAutoAvailable
     is_camera_property_auto_available.restype = c_int
-    is_camera_property_auto_available.argtypes = {GrabberHandlePtr,
-                                                  c_int}
+    is_camera_property_auto_available.argtypes = (GrabberHandlePtr,
+                                                  c_int)
     
     #int AC IC_GetAutoCameraProperty( HGRABBER hGrabber, int iProperty, int *iOnOff ); ///<Retrieve whether automatic is enabled for the specifield camera property.
     get_auto_camera_property = _ic_grabber_dll.IC_GetAutoCameraProperty
@@ -651,7 +652,7 @@ class IC_GrabberDLL:
     list_video_formats = _ic_grabber_dll.IC_ListVideoFormats
     list_video_formats.restype = c_int
     list_video_formats.argtypes = (GrabberHandlePtr,
-                                   POINTER((c_char * 80) * 40),
+                                   POINTER((c_char * 40) * 80),
                                    c_int)
     
     #//////////////////////////////////////////////////////////////////////////
@@ -1064,7 +1065,11 @@ class IC_GrabberDLL:
     #    @param iEnable = 1 inserts overlay, 0 removes the overlay.
     #*/
     #void AC IC_RemoveOverlay( HGRABBER hGrabber, int iEnable );
-    #
+    remove_overlay = _ic_grabber_dll.IC_RemoveOverlay
+    remove_overlay.restype = None
+    enable_trigger.argtypes = (GrabberHandlePtr,
+                               c_int)
+
     #//////////////////////////////////////////////////////////////////////////
     #/*!    Enable or disable the overlay bitmap on the live video
     #    @param hGrabber      Handle to a grabber object.
@@ -1486,6 +1491,10 @@ class IC_GrabberDLL:
     #
     #*/
     #int AC IC_FocusOnePush(HGRABBER hGrabber);
+    focus_one_push = _ic_grabber_dll.IC_FocusOnePush
+    focus_one_push.restype = c_int
+    focus_one_push.argtypes = (GrabberHandlePtr,)
+
     #
     #
     #
