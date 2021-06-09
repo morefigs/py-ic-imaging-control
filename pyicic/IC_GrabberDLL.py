@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
-from builtins import object
+import ctypes.util
 from ctypes import *
 import os
 import sys
 
 from . import IC_Structures as structs
 
-class IC_GrabberDLL(object):
+
+class IC_GrabberDLL:
     """
     ctypes funcs to talk to tisgrabber.dll.
     """
@@ -18,9 +18,9 @@ class IC_GrabberDLL(object):
     
     # win32
     if sys.maxsize > 2**32:
-        _ic_grabber_dll = windll.LoadLibrary('tisgrabber_x64.dll')
+        _ic_grabber_dll = windll.LoadLibrary(ctypes.util.find_library('tisgrabber_x64.dll'))
     else:
-        _ic_grabber_dll = windll.LoadLibrary('tisgrabber.dll')
+        _ic_grabber_dll = windll.LoadLibrary(ctypes.util.find_library('tisgrabber.dll'))
 
 
     #//////////////////////////////////////////////////////////////////////////

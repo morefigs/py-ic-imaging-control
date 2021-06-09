@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
-from builtins import range
-from builtins import object
 from .IC_GrabberDLL import IC_GrabberDLL
 from .IC_Camera import IC_Camera
 from .IC_Exception import IC_Exception
 
 
-class IC_ImagingControl(object):
+class IC_ImagingControl:
     
     def init_library(self):
         """
@@ -44,7 +41,7 @@ class IC_ImagingControl(object):
             
             # populate list
             for i in range(num_devices):
-                self._unique_device_names.append(IC_GrabberDLL.get_unique_name_from_list(i))
+                self._unique_device_names.append(IC_GrabberDLL.get_unique_name_from_list(i).decode('ascii'))
         
         return self._unique_device_names
     
