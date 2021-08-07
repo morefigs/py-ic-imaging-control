@@ -1,3 +1,5 @@
+**Note:** there now appears to be some official support for TIS cameras using Python: https://github.com/TheImagingSource/IC-Imaging-Control-Samples/tree/master/Python
+
 # py-ic-imaging-control
 
 py-ic-imaging-control provides control of The Imaging Source (TIS) cameras using only Python. It is a Python wrapper for the IC Imaging Control SDK and wraps the tisgrabber.dll file included in the IC Imaging Control C SDK installer using ctypes. The code currently supports most of the functionality exposed by the DLL file, including frame ready callbacks.
